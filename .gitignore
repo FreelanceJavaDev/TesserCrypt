@@ -6,3 +6,6 @@ vc140.pdb
 README.md.backup
 build/*
 .vscode/*
+test_core
+core/*.o
+tests/*.o

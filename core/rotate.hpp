@@ -41,6 +41,20 @@ public:
 		return rotMatrix;
 	}
 
+	std::array<std::array<double, N_AXISES>, N_AXISES>& rotateIncrement(const size_t plain, double incr) {
+		double angle_rad = degreeToRadian(incr);
+		double val_cos = cos(angle_rad);
+		double val_sine = sin(angle_rad);
+		std::array<std::array<double, N_AXISES>, N_AXISES> &rotMatrix = rotPlains[plain];
+		std::array<std::array<size_t, 2>, N_AXISES> &trig_rc = trig_rc_idx[plain];
+		rotMatrix[trig_rc[0][0]][trig_rc[0][1]] += val_cos; 
+		rotMatrix[trig_rc[2][0]][trig_rc[2][1]] += val_cos;
+		rotMatrix[trig_rc[1][0]][trig_rc[1][1]] += val_sine;
+		rotMatrix[trig_rc[3][0]][trig_rc[3][1]] += -1*val_sine;
+		return rotMatrix;
+	}
+
+
 };
 
 #endif
