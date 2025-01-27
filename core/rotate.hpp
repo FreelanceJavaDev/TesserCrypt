@@ -3,11 +3,12 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <array>
+#include <cstdint>
 #include "coreDef.hpp"
 
 class RotationMatrix {
 private:
-	double degreeToRadian(double degreeAngle) { return M_PI * degreeAngle / 180.0; }
+	double degreeToRadian(double degreeAngle) { return M_PI * (degreeAngle / 180.0); }
 	std::array<std::array<std::array<double, N_AXISES>, N_AXISES>, N_PLAINS> rotPlains {{ // XY, XZ, XW, YZ, YW, ZW
 		{{ {HUGE_VAL, HUGE_VAL, 0, 0}, {HUGE_VAL, HUGE_VAL, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }},
 		{{ {HUGE_VAL, 0, HUGE_VAL, 0}, {0, 1, 0, 0}, {HUGE_VAL, 0, HUGE_VAL, 0}, {0, 0, 0, 1} }},
@@ -19,12 +20,12 @@ private:
 	}};
 
 	std::array<std::array<std::array<size_t, 2>, N_AXISES>, N_PLAINS> trig_rc_idx {{ //cos, sin, cos, -sin
-		{{{0, 0}, {1, 0}, {0, 1}, {1, 1}}},
-		{{{0, 0}, {0, 2}, {2, 2}, {0, 2}}},
-		{{{0, 0}, {0, 3}, {3, 3}, {3, 0}}},
-		{{{1, 1}, {2, 1}, {2, 2}, {1, 2}}},
-		{{{1, 1}, {3, 1}, {3, 3}, {1, 3}}},
-		{{{2, 2}, {3, 2}, {3, 3}, {2, 3}}}
+		{{{0, 0}, {1, 0}, {1, 1}, {0, 1}}}, //XY
+		{{{0, 0}, {0, 2}, {2, 2}, {2, 0}}}, //XZ
+		{{{0, 0}, {0, 3}, {3, 3}, {3, 0}}}, //XW
+		{{{1, 1}, {2, 1}, {2, 2}, {1, 2}}}, //YZ
+		{{{1, 1}, {3, 1}, {3, 3}, {1, 3}}}, //YW
+		{{{2, 2}, {3, 2}, {3, 3}, {2, 3}}}  //ZW
 	}};
 
 public:

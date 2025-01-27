@@ -3,11 +3,18 @@
 #include <boost/test/included/unit_test.hpp>
 #include "../core/coreDef.hpp"
 #include "../core/tesseract.hpp"
+#include "../core/rotate.hpp"
 
 struct fx_tesseract : public Tesseract {
 	fx_tesseract() {};
 	~fx_tesseract() {};
 };
+
+struct fx_rotMatrix : public RotationMatrix {
+	fx_rotMatrix() {};
+	~fx_rotMatrix() {};
+};
+
 BOOST_FIXTURE_TEST_SUITE(initSuite, fx_tesseract)
 
 BOOST_AUTO_TEST_CASE(initCheck) {
@@ -53,6 +60,67 @@ BOOST_AUTO_TEST_CASE(initCheck) {
 		BOOST_CHECK(actual_data[9] == expected_ending[1]);
 		BOOST_CHECK(actual_data[10] == expected_ending[2]);
 	}
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(rotSuite, fx_rotMatrix)
+BOOST_AUTO_TEST_CASE(rotXYTest) {
+	const double sqrt3_2 = std::sqrt(3.0)/2.0;
+	const double sqrt2_2 = std::sqrt(2.0)/2.0;
+	const double half = 0.50;
+	std::array<std::array<double, N_AXISES>, N_AXISES> expected_0 =  {
+		{{1.0, -0.0, 0, 0}, {0.0, 1.0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}
+	}};
+
+	std::array<std::array<double, N_AXISES>, N_AXISES> expected_30 =  {
+		{{sqrt3_2, -1*half, 0, 0}, {half, sqrt3_2, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}
+	}};
+
+	std::array<std::array<double, N_AXISES>, N_AXISES> expected_45 =  {
+		{{sqrt2_2, -1*sqrt2_2, 0, 0}, {sqrt2_2, sqrt2_2, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}
+	}};
+
+	std::array<std::array<double, N_AXISES>, N_AXISES> expected_60 =  {
+		{{half, -1*sqrt3_2, 0, 0}, {sqrt3_2, half, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}
+	}};
+
+	std::array<std::array<double, N_AXISES>, N_AXISES> expected_90 =  {
+		{{0.0, -1.0, 0, 0}, {1.0, 0.0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}
+	}};
+	std::array<std::array<double, N_AXISES>, N_AXISES> actual = rotateDegree(XY, 0);
+	double tolerance = 0.00000000000015;
+	double tolerance_zero = 0.0000000000000001;
+	for(size_t row = 0; row < N_AXISES; ++row) {
+		BOOST_TEST_CHECK(actual[X][row] == expected_0[X][row]);
+		BOOST_TEST_CHECK(actual[Y][row] == expected_0[Y][row]);
+		BOOST_TEST_CHECK(actual[Z][row] == expected_0[Z][row]);
+		BOOST_TEST_CHECK(actual[W][row] == expected_0[W][row]);
+	}
+
+	actual = rotateDegree(XY, 30);
+	BOOST_CHECK_CLOSE(actual[X][0], expected_30[X][0], tolerance);
+	BOOST_CHECK_CLOSE(actual[Y][0], expected_30[Y][0], tolerance);
+	BOOST_CHECK_CLOSE(actual[X][1], expected_30[X][1], tolerance);
+	BOOST_CHECK_CLOSE(actual[Y][1], expected_30[Y][1], tolerance);
+
+	actual = rotateDegree(XY, 45);
+	BOOST_CHECK_CLOSE(actual[X][0], expected_45[X][0], tolerance);
+	BOOST_CHECK_CLOSE(actual[Y][0], expected_45[Y][0], tolerance);
+	BOOST_CHECK_CLOSE(actual[X][1], expected_45[X][1], tolerance);
+	BOOST_CHECK_CLOSE(actual[Y][1], expected_45[Y][1], tolerance);
+
+	actual = rotateDegree(XY, 60);
+	BOOST_CHECK_CLOSE(actual[X][0], expected_60[X][0], tolerance);
+	BOOST_CHECK_CLOSE(actual[Y][0], expected_60[Y][0], tolerance);
+	BOOST_CHECK_CLOSE(actual[X][1], expected_60[X][1], tolerance);
+	BOOST_CHECK_CLOSE(actual[Y][1], expected_60[Y][1], tolerance);
+
+	actual = rotateDegree(XY, 90.0);
+	BOOST_CHECK_SMALL(actual[X][0], tolerance_zero);
+	BOOST_TEST_CHECK(actual[Y][0] == expected_90[Y][0]);
+	BOOST_TEST_CHECK(actual[X][1] ==expected_90[X][1]);
+	BOOST_CHECK_SMALL(actual[Y][1], tolerance_zero);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

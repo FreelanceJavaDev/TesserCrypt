@@ -44,6 +44,9 @@ protected:
 		{F,G,N}, {E,H,M}, {E,A,M}, {B,F,J}, {C,G,K}, {H,D,P} 
 	}};
 	std::array<double, 24> face_area = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
+	std::array<size_t, 24> face_plain = { YZ, YZ, XZ, XZ, XY, XY, YZ, YZ, XZ, XZ, XY, XY, 
+	YW, YW, XW, XW, YW, YW, XW, XW, ZW, ZW, ZW, ZW };
+
 	std::array<std::array<double, 11>, 24> area_calc_data = {{ //p0->p1(4), p0->p2(4), mag(2), angle
 	 { 2,  0,  0,  0,  0,  2,  0,  0, 2, 2, 90}, {-2,  0,  0,  0,  0,  2,  0,  0, 2, 2, 90}, //CDG
 	 { 0,  0,  2,  0,  0,  2,  0,  0, 2, 2, 90}, { 0,  0,  2,  0,  0,  2,  0,  0, 2, 2, 90}, //DAH
@@ -92,6 +95,57 @@ public:
 		return *this;
 	};
 
+	Tesseract& operator*=(std::array<int32_t, N_AXISES> scalar_vi) {
+		for(uint8_t i = 0; i < N_POINTS; ++i) {
+			vertexes[X][i] *= scalar_vi[X];
+			vertexes[Y][i] *= scalar_vi[Y];
+			vertexes[Z][i] *= scalar_vi[Z];
+			vertexes[W][i] *= scalar_vi[W];
+		}
+		return *this;
+	};
+
+	Tesseract& operator*=(std::array<float, N_AXISES> scalar_vf) {
+		for(uint8_t i = 0; i < N_POINTS; ++i) {
+			vertexes[X][i] *= scalar_vf[X];
+			vertexes[Y][i] *= scalar_vf[Y];
+			vertexes[Z][i] *= scalar_vf[Z];
+			vertexes[W][i] *= scalar_vf[W];
+		}
+		return *this;
+	};
+
+	Tesseract& operator*=(std::array<double, N_AXISES> scalar_vd) {
+		for(uint8_t i = 0; i < N_POINTS; ++i) {
+			vertexes[X][i] *= scalar_vd[X];
+			vertexes[Y][i] *= scalar_vd[Y];
+			vertexes[Z][i] *= scalar_vd[Z];
+			vertexes[W][i] *= scalar_vd[W];
+		}
+		return *this;
+	};
+
+	void rotateSimple(std::array<std::array<double, N_AXISES>, N_AXISES> &rotMatrix, double angle, size_t plain) {
+		for(uint8_t i = 0; i < 24; ++i) {
+			if(plain == face_plain[i]) {
+				area_calc_data[i][10] += angle;
+				if(area_calc_data[i][10] > 180.0) { area_calc_data[i][10] -= 180.0; }
+			}
+		}
+		// 4x4 * 4x16
+		std::array<double, N_AXISES> col_src;
+		for(uint8_t ret_col = 0; ret_col < N_POINTS; ++ret_col) {
+			col_src[X] = vertexes[X][ret_col];
+			col_src[Y] = vertexes[Y][ret_col];
+			col_src[Z] = vertexes[Z][ret_col];
+			col_src[W] = vertexes[W][ret_col];
+			
+			vertexes[X][ret_col] = rotMatrix[0][0]*col_src[X] + rotMatrix[0][1]*col_src[Y] + rotMatrix[0][2]*col_src[Z] + rotMatrix[0][3]*col_src[W];
+			vertexes[Y][ret_col] = rotMatrix[1][0]*col_src[X] + rotMatrix[1][1]*col_src[Y] + rotMatrix[1][2]*col_src[Z] + rotMatrix[1][3]*col_src[W];
+			vertexes[Z][ret_col] = rotMatrix[2][0]*col_src[X] + rotMatrix[2][1]*col_src[Y] + rotMatrix[2][2]*col_src[Z] + rotMatrix[2][3]*col_src[W];
+			vertexes[W][ret_col] = rotMatrix[3][0]*col_src[X] + rotMatrix[3][1]*col_src[Y] + rotMatrix[3][2]*col_src[Z] + rotMatrix[3][3]*col_src[W];
+		}
+	}
 };
 
 #endif
