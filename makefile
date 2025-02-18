@@ -2,7 +2,7 @@ CC = g++
 CORE_OBJS = ./core/tesseract.o ./core/rotate.o
 
 FLAGS = -std=c++17
-TEST_OBJS = ./tests/core_tests.o
+TEST_OBJS = ./tests/tesseract_unit_tests.o ./tests/rotate_unit_tests.o ./tests/core_tests.o 
 
 all: core
 

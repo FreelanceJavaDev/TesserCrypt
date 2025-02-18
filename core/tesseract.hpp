@@ -37,7 +37,7 @@ protected:
 		{A,B,J,I}, {D,C,K,L}, {B,C,K,J}, {D,A,I,L}, {F,E,M,N}, {G,H,P,O}, 
 		{F,G,O,N}, {E,H,P,M}, {E,A,I,M}, {B,F,N,J}, {C,G,O,K}, {H,D,L,P} 
 	}};
-	std::array<std::array<size_t, 3>, 24> face_vectors= {{ //p0->p1, p0->p2
+	std::array<std::array<size_t, 3>, 24> face_vectors = {{ //p0->p1, p0->p2
 		{A,B,E}, {C,D,G}, {B,C,F}, {D,A,H}, {D,C,A}, {F,E,G},
 		{I,J,M}, {K,L,O}, {J,K,N}, {L,I,P}, {L,K,I}, {P,M,O},
 		{A,B,I}, {D,C,L}, {B,C,J}, {D,A,L}, {F,E,N}, {G,H,O}, 
@@ -48,23 +48,26 @@ protected:
 	YW, YW, XW, XW, YW, YW, XW, XW, ZW, ZW, ZW, ZW };
 
 	std::array<std::array<double, 11>, 24> area_calc_data = {{ //p0->p1(4), p0->p2(4), mag(2), angle
-	 { 2,  0,  0,  0,  0,  2,  0,  0, 2, 2, 90}, {-2,  0,  0,  0,  0,  2,  0,  0, 2, 2, 90}, //CDG
-	 { 0,  0,  2,  0,  0,  2,  0,  0, 2, 2, 90}, { 0,  0,  2,  0,  0,  2,  0,  0, 2, 2, 90}, //DAH
-	 { 2,  0,  0,  0,  0,  0, -2,  0, 2, 2, 90}, {-2,  0,  0,  0,  0,  0,  2,  0, 2, 2, 90}, //FEG
-	 { 2,  0,  0,  0,  0,  2,  0,  0, 2, 2, 90}, {-2,  0,  0,  0,  0,  2,  0,  0, 2, 2, 90}, //KLO
-	 { 0,  0,  2,  0,  0,  2,  0,  0, 2, 2, 90}, { 0,  0, -2,  0,  0,  2,  0,  0, 2, 2, 90}, //LIP
-	 { 2,  0,  0,  0,  0,  0, -2,  0, 2, 2, 90}, { 0,  0, -2,  0,  2,  0,  0,  0, 2, 2, 90}, //PMO
-	 { 2,  0,  0,  0,  0,  0,  0,  2, 2, 2, 90}, { 2,  0,  0,  0,  0,  0,  0,  2, 2, 2, 90}, //DCL
-	 { 0,  0,  2,  0,  0,  0,  0,  2, 2, 2, 90}, { 0,  0, -2,  0,  0,  0,  0,  2, 2, 2, 90}, //DAL
-	 {-2,  0,  0,  0,  0,  0,  0,  2, 2, 2, 90}, {-2,  0,  0,  0,  0,  0,  0,  2, 2, 2, 90}, //GHO
-	 { 2,  0,  0,  0,  0,  0,  0,  2, 2, 2, 90}, { 0,  0,  2,  0,  0,  0,  0,  2, 2, 2, 90}, //EHM
-	 { 0, -2,  0,  0,  0,  0,  0,  2, 2, 2, 90}, { 0,  2,  0,  0,  0,  0,  0,  2, 2, 2, 90}, //BFJ
-	 { 0,  2,  0,  0,  0,  0,  0,  2, 2, 2, 90}, { 0, -2,  0,  0,  0,  0,  0,  2, 2, 2, 90}, //HDP
+	 { 2,  0,  0,  0,  0,  2,  0,  0, 2, 2, DEG_90}, {-2,  0,  0,  0,  0,  2,  0,  0, 2, 2, DEG_90}, //CDG
+	 { 0,  0,  2,  0,  0,  2,  0,  0, 2, 2, DEG_90}, { 0,  0, -2,  0,  0,  2,  0,  0, 2, 2, DEG_90}, //DAH
+	 { 2,  0,  0,  0,  0,  0, -2,  0, 2, 2, DEG_90}, {-2,  0,  0,  0,  0,  0,  2,  0, 2, 2, DEG_90}, //FEG
+	 { 2,  0,  0,  0,  0,  2,  0,  0, 2, 2, DEG_90}, {-2,  0,  0,  0,  0,  2,  0,  0, 2, 2, DEG_90}, //KLO
+	 { 0,  0,  2,  0,  0,  2,  0,  0, 2, 2, DEG_90}, { 0,  0, -2,  0,  0,  2,  0,  0, 2, 2, DEG_90}, //LIP
+	 { 2,  0,  0,  0,  0,  0, -2,  0, 2, 2, DEG_90}, { 0,  0, -2,  0,  2,  0,  0,  0, 2, 2, DEG_90}, //PMO
+	 { 2,  0,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, { 2,  0,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, //DCL
+	 { 0,  0,  2,  0,  0,  0,  0,  2, 2, 2, DEG_90}, { 0,  0, -2,  0,  0,  0,  0,  2, 2, 2, DEG_90}, //DAL
+	 {-2,  0,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, {-2,  0,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, //GHO
+	 { 0,  0,  2,  0,  0,  0,  0,  2, 2, 2, DEG_90}, { 0,  0,  2,  0,  0,  0,  0,  2, 2, 2, DEG_90}, //EHM
+	 { 0, -2,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, { 0,  2,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, //BFJ
+	 { 0,  2,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, { 0, -2,  0,  0,  0,  0,  0,  2, 2, 2, DEG_90}, //HDP
 	}};
 public:
 	Tesseract() = default;
-	//Uses the dot product and a*b*sin(x)
+	//Uses the dot product and a*b*sin(x), recalculates every data parameter and face
 	void update_face_area_all();
+
+	//Updates vector edges, side lengths and related data except for angle.
+	void edge_length_update();
 	//Uniform Scalar multiplication
 	Tesseract& operator*=(int32_t scalar_i) {
 		for(uint8_t i = 0; i < N_POINTS; ++i) {
@@ -128,8 +131,30 @@ public:
 	void rotateSimple(std::array<std::array<double, N_AXISES>, N_AXISES> &rotMatrix, double angle, size_t plain) {
 		for(uint8_t i = 0; i < 24; ++i) {
 			if(plain == face_plain[i]) {
-				area_calc_data[i][10] += angle;
-				if(area_calc_data[i][10] > 180.0) { area_calc_data[i][10] -= 180.0; }
+				area_calc_data[i][10] += M_PI * (angle / 180.0);
+				std::fmod(area_calc_data[i][10], M_PI);
+			}
+		}
+		// 4x4 * 4x16
+		std::array<double, N_AXISES> col_src;
+		for(uint8_t ret_col = 0; ret_col < N_POINTS; ++ret_col) {
+			col_src[X] = vertexes[X][ret_col];
+			col_src[Y] = vertexes[Y][ret_col];
+			col_src[Z] = vertexes[Z][ret_col];
+			col_src[W] = vertexes[W][ret_col];
+			
+			vertexes[X][ret_col] = rotMatrix[0][0]*col_src[X] + rotMatrix[0][1]*col_src[Y] + rotMatrix[0][2]*col_src[Z] + rotMatrix[0][3]*col_src[W];
+			vertexes[Y][ret_col] = rotMatrix[1][0]*col_src[X] + rotMatrix[1][1]*col_src[Y] + rotMatrix[1][2]*col_src[Z] + rotMatrix[1][3]*col_src[W];
+			vertexes[Z][ret_col] = rotMatrix[2][0]*col_src[X] + rotMatrix[2][1]*col_src[Y] + rotMatrix[2][2]*col_src[Z] + rotMatrix[2][3]*col_src[W];
+			vertexes[W][ret_col] = rotMatrix[3][0]*col_src[X] + rotMatrix[3][1]*col_src[Y] + rotMatrix[3][2]*col_src[Z] + rotMatrix[3][3]*col_src[W];
+		}
+	}
+
+	void rotateSimple_RAD(std::array<std::array<double, N_AXISES>, N_AXISES> &rotMatrix, double radians, size_t plain) {
+		for(uint8_t i = 0; i < 24; ++i) {
+			if(plain == face_plain[i]) {
+				area_calc_data[i][10] += radians;
+				std::fmod(area_calc_data[i][10], M_PI);
 			}
 		}
 		// 4x4 * 4x16
