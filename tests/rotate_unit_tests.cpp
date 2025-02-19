@@ -7,6 +7,13 @@ struct fx_rotMatrix : public RotationMatrix {
 	fx_rotMatrix() {};
 	~fx_rotMatrix() {};
 };
+
+const double pi = std::acos(-1);
+
+const double PI_36 = pi/36.0; // 5 degree angle
+const double PI_12 = pi/12.0; // 15 degree angle
+const double PI_6 = pi/6.0;
+
 const double sqrt3_2 = std::sqrt(3.0)/2.0;
 const double sqrt2_2 = std::sqrt(2.0)/2.0;
 const double half = 0.50;
@@ -21,10 +28,12 @@ const double _sin_15_deg = -1*sin_15_deg;
 
 const double tolerance_norm = 1.5e-13;
 const double tolerance_zero = 1.0e-16;
+const double tolerance_min = std::numeric_limits<double>::epsilon();
 BOOST_AUTO_TEST_SUITE(Core_Test_Suite)
 //Unit Tests for Rotation class only
 BOOST_FIXTURE_TEST_SUITE(rotSuite, fx_rotMatrix)
 namespace tdata = boost::unit_test::data;
+namespace tt = boost::test_tools;
 std::array<double, 6> test_deg_angle_data = { 0, 15, 30, 45, 60, 90 };
 const std::array<const std::array<const std::array<double, N_AXISES>, N_AXISES>, 2> expected_XY_15 {{
 	{{ {cos_15_deg, _sin_15_deg, 0, 0}, {sin_15_deg, cos_15_deg, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }},
@@ -122,7 +131,6 @@ BOOST_DATA_TEST_CASE(rotZW_deg_test, tdata::xrange(6)^test_deg_angle_data, idx, 
 	}
 }
 
-
 BOOST_DATA_TEST_CASE(rotYW_deg_test, tdata::xrange(6)^test_deg_angle_data, idx, angle_deg) {
 	std::array<std::array<double, N_AXISES>, N_AXISES> actual = rotateDegree(YW, angle_deg);
 	const std::array<const std::array<double, N_AXISES>, N_AXISES> &expected = expected_YW[idx];
@@ -175,7 +183,6 @@ BOOST_DATA_TEST_CASE(rotXW_deg_test, tdata::xrange(6)^test_deg_angle_data, idx, 
 	}
 }
 
-
 BOOST_AUTO_TEST_SUITE(rotXY_deg_Test_Suite)
 BOOST_DATA_TEST_CASE(rotXY_deg_test, tdata::xrange(6)^test_deg_angle_data, idx, angle_deg) {
 	std::array<std::array<double, N_AXISES>, N_AXISES> actual = rotateDegree(XY, angle_deg);
@@ -189,7 +196,6 @@ BOOST_DATA_TEST_CASE(rotXY_deg_test, tdata::xrange(6)^test_deg_angle_data, idx, 
 		BOOST_CHECK_CLOSE(actual[Y][Y], expected[Y][Y], tolerance_norm);
 	}
 }
-
 
 BOOST_AUTO_TEST_CASE(rotXY_135_Test) {
 	std::array<std::array<double, N_AXISES>, N_AXISES> expected_135 =  {
@@ -219,6 +225,98 @@ BOOST_AUTO_TEST_CASE(rotXY_incrment_Test) {
 	BOOST_CHECK_CLOSE(actual_inc[Y][Y], expected[Y][Y], tolerance_norm);
 
 
+}
+
+BOOST_AUTO_TEST_CASE(rotXY_increment_x_24_2PI_Test) {
+	const std::array<const std::array<const std::array<double, N_AXISES>, N_AXISES>, 2> fixed_expected = {{
+		{{ {1.0, -0.0, 0, 0}, {0.0, 1.0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }},
+		{{ {cos_15_deg, _sin_15_deg, 0, 0}, {sin_15_deg, cos_15_deg, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }}
+	}};
+	std::array<std::array<double, N_AXISES>, N_AXISES> dyn_expected = {{ {cos_15_deg, _sin_15_deg, 0, 0}, {sin_15_deg, cos_15_deg, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }};
+	std::array<std::array<double, N_AXISES>, N_AXISES> &actual = rotateRadian(XY, 0);
+	for(size_t row = 0; row < N_AXISES; ++row) {
+		BOOST_TEST_CHECK(actual[X][row] == fixed_expected[0][X][row]);
+		BOOST_TEST_CHECK(actual[Y][row] == fixed_expected[0][Y][row]);
+		BOOST_TEST_CHECK(actual[Z][row] == fixed_expected[0][Z][row]);
+		BOOST_TEST_CHECK(actual[W][row] == fixed_expected[0][W][row]);
+	}
+
+	double angle_rad, cos_i, sin_i, _sin_i;
+	for(int i = 1; i < 25; ++i) {
+		angle_rad = PI_12*i;
+		cos_i = std::cos(angle_rad);
+		sin_i = std::sin(angle_rad);
+		_sin_i = -1*sin_i;
+		dyn_expected[X][X] = dyn_expected[Y][Y] = cos_i;
+		dyn_expected[X][Y] = _sin_i;
+		dyn_expected[Y][X] = sin_i;
+		actual = rotateIncrement(XY, PI_12);
+		if(i == 6 || i == 18) {
+			BOOST_CHECK_SMALL(actual[X][0], tolerance_norm);
+			BOOST_TEST_CHECK(actual[Y][0] == dyn_expected[Y][0], tt::tolerance(tolerance_norm));
+			BOOST_TEST_CHECK(actual[X][1] == dyn_expected[X][1], tt::tolerance(tolerance_norm));
+			BOOST_CHECK_SMALL(actual[Y][1], tolerance_norm);
+		} 
+		else if (i == 12 || i == 24) {
+			BOOST_TEST_CHECK(actual[X][0] == dyn_expected[X][0], tt::tolerance(tolerance_norm));
+			BOOST_CHECK_SMALL(actual[Y][0], tolerance_norm);
+			BOOST_CHECK_SMALL(actual[X][1], tolerance_norm);
+			BOOST_TEST_CHECK(actual[Y][1] == dyn_expected[Y][1], tt::tolerance(tolerance_norm));
+		}
+		else {
+			BOOST_CHECK_CLOSE(actual[X][0], dyn_expected[X][0], tolerance_norm);
+			BOOST_CHECK_CLOSE(actual[Y][0], dyn_expected[Y][0], tolerance_norm);
+			BOOST_CHECK_CLOSE(actual[X][1], dyn_expected[X][1], tolerance_norm);
+			BOOST_CHECK_CLOSE(actual[Y][1], dyn_expected[Y][1], tolerance_norm);
+		}
+	}
+}
+
+BOOST_AUTO_TEST_CASE(rotXY_increment_x_24_360_Test) {
+	const std::array<const std::array<const std::array<double, N_AXISES>, N_AXISES>, 2> fixed_expected = {{
+		{{ {1.0, -0.0, 0, 0}, {0.0, 1.0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }},
+		{{ {cos_15_deg, _sin_15_deg, 0, 0}, {sin_15_deg, cos_15_deg, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }}
+	}};
+	std::array<std::array<double, N_AXISES>, N_AXISES> dyn_expected = {{ {cos_15_deg, _sin_15_deg, 0, 0}, {sin_15_deg, cos_15_deg, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }};
+	std::array<std::array<double, N_AXISES>, N_AXISES> &actual = rotateDegree(XY, 0);
+	for(size_t row = 0; row < N_AXISES; ++row) {
+		BOOST_TEST_CHECK(actual[X][row] == fixed_expected[0][X][row]);
+		BOOST_TEST_CHECK(actual[Y][row] == fixed_expected[0][Y][row]);
+		BOOST_TEST_CHECK(actual[Z][row] == fixed_expected[0][Z][row]);
+		BOOST_TEST_CHECK(actual[W][row] == fixed_expected[0][W][row]);
+	}
+
+	double angle_rad, cos_i, sin_i, _sin_i;
+	for(int i = 1; i < 25; ++i) {
+		angle_rad = M_PI * ((15*i) / 180.0);
+		cos_i = std::cos(angle_rad);
+		sin_i = std::sin(angle_rad);
+		_sin_i = -1*sin_i;
+		dyn_expected[X][X] = dyn_expected[Y][Y] = cos_i;
+		dyn_expected[X][Y] = _sin_i;
+		dyn_expected[Y][X] = sin_i;
+		actual = rotateIncrement_deg(XY, 15);
+		BOOST_TEST_CONTEXT("i: " << i) {
+		if(i == 6 || i == 18) {
+			BOOST_CHECK_SMALL(actual[X][0], tolerance_norm);
+			BOOST_TEST_CHECK(actual[Y][0] == dyn_expected[Y][0], tt::tolerance(tolerance_norm));
+			BOOST_TEST_CHECK(actual[X][1] == dyn_expected[X][1], tt::tolerance(tolerance_norm));
+			BOOST_CHECK_SMALL(actual[Y][1], tolerance_norm);
+		} 
+		else if (i == 12 || i == 24) {
+			BOOST_TEST_CHECK(actual[X][0] == dyn_expected[X][0], tt::tolerance(tolerance_norm));
+			BOOST_CHECK_SMALL(actual[Y][0], tolerance_norm);
+			BOOST_CHECK_SMALL(actual[X][1], tolerance_norm);
+			BOOST_TEST_CHECK(actual[Y][1] == dyn_expected[Y][1], tt::tolerance(tolerance_norm));
+		}
+		else {
+			BOOST_TEST_CHECK(actual[X][0] == dyn_expected[X][0], tt::tolerance(tolerance_norm));
+			BOOST_TEST_CHECK(actual[Y][0] == dyn_expected[Y][0], tt::tolerance(tolerance_norm));
+			BOOST_TEST_CHECK(actual[X][1] == dyn_expected[X][1], tt::tolerance(tolerance_norm));
+			BOOST_TEST_CHECK(actual[Y][1] == dyn_expected[Y][1], tt::tolerance(tolerance_norm));
+		}
+		}
+	}
 }
 
 BOOST_AUTO_TEST_SUITE_END()

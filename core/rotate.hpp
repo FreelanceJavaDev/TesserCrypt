@@ -7,14 +7,14 @@
 
 class RotationMatrix {
 private:
-	double degreeToRadian(double degreeAngle) { return M_PI * (degreeAngle / 180.0); }
+	double degreeToRadian(double degreeAngle) { return pi_d * (degreeAngle / 180.0); }
 	std::array<std::array<std::array<double, N_AXISES>, N_AXISES>, N_PLAINS> rotPlains {{ // XY, XZ, XW, YZ, YW, ZW
-		{{ {HUGE_VAL, HUGE_VAL, 0, 0}, {HUGE_VAL, HUGE_VAL, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }}, // XY
-		{{ {HUGE_VAL, 0, HUGE_VAL, 0}, {0, 1, 0, 0}, {HUGE_VAL, 0, HUGE_VAL, 0}, {0, 0, 0, 1} }}, // XZ
-		{{ {HUGE_VAL, 0, 0, HUGE_VAL}, {0, 1, 0, 0}, {0, 0, 1, 0}, {HUGE_VAL, 0, 0, HUGE_VAL} }}, // XW
-		{{ {1, 0, 0, 0}, {0, HUGE_VAL, HUGE_VAL, 0}, {0, HUGE_VAL, HUGE_VAL, 0}, {0, 0, 0, 1} }}, //YZ
-		{{ {1, 0, 0, 0}, {0, HUGE_VAL, 0, HUGE_VAL}, {0, 0, 1, 0}, {0, HUGE_VAL, 0, HUGE_VAL} }}, //YW
-		{{ {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, HUGE_VAL, HUGE_VAL}, {0, 0, HUGE_VAL, HUGE_VAL} }} //ZW
+		{{ {1.0, -0.0, 0, 0}, {0.0, 1.0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} }}, // XY
+		{{ {1.0, 0, 0.0, 0}, {0, 1, 0, 0}, {-0.0, 0, 1.0, 0}, {0, 0, 0, 1} }}, // XZ
+		{{ {1.0, 0, 0, 0.0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {-0.0, 0, 0, 1.0} }}, // XW
+		{{ {1, 0, 0, 0}, {0, 1.0, -0.0, 0}, {0, 0.0, 1.0, 0}, {0, 0, 0, 1} }}, //YZ
+		{{ {1, 0, 0, 0}, {0, 1.0, 0, -0.0}, {0, 0, 1, 0}, {0, 0.0, 0, 1.0} }}, //YW
+		{{ {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1.0, -0.0}, {0, 0, 0.0, 1.0} }} //ZW
 
 	}};
 
@@ -58,8 +58,8 @@ public:
 	 * sin(a+b) = sin(a)*cos(b) + sin(b)*cos(a)
 	 */
 	std::array<std::array<double, N_AXISES>, N_AXISES>& rotateIncrement(const size_t plain, double angle_rad) {
-		double cos_b = cos(angle_rad);
-		double sin_b = sin(angle_rad);
+		double cos_b = std::cos(angle_rad);
+		double sin_b = std::sin(angle_rad);
 		std::array<std::array<double, N_AXISES>, N_AXISES> &rotMatrix = rotPlains[plain];
 		std::array<std::array<size_t, 2>, N_AXISES> &trig_rc = trig_rc_idx[plain];
 		double cos_a = rotMatrix[trig_rc[0][0]][trig_rc[0][1]]; 
